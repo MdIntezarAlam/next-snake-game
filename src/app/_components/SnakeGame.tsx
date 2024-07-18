@@ -3,7 +3,6 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
 import bgImage from "../../../public/bg-image.jpg";
-import user from "../../../public/user.jpg";
 
 const SnakeGame = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
