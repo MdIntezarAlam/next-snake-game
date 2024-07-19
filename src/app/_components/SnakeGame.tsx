@@ -1,8 +1,8 @@
+"use client";
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
-"use client";
 import { useState, useEffect, useRef, useCallback } from "react";
-import bgImage from "../../../public/bg-image.jpg";
+import bgImage from "@/public/bg-image.jpg";
 
 const SnakeGame = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -19,20 +19,31 @@ const SnakeGame = () => {
   );
   const intervalRef = useRef<number | null>(null);
 
-  const eatingSound = useRef(new Audio("/eatingSound.mp3"));
-  const runningSound = useRef(new Audio("/runningSound.mp3"));
-  const gameOverSound = useRef(new Audio("/gameOverSound.mp3"));
+  const eatingSound = useRef<HTMLAudioElement | null>(null);
+  const runningSound = useRef<HTMLAudioElement | null>(null);
+  const gameOverSound = useRef<HTMLAudioElement | null>(null);
 
   const [gameSpeed, setGameSpeed] = useState(200);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      eatingSound.current = new Audio("/eatingSound.mp3");
+      runningSound.current = new Audio("/runningSound.mp3");
+      gameOverSound.current = new Audio("/gameOverSound.mp3");
+    }
+  }, []);
+
   const update = useCallback(() => {
     const canvas = canvasRef.current;
-    const scale = 15;
-    const rows = canvas!.height / scale;
-    const columns = canvas!.width / scale;
+    if (!canvas) return;
+
+    const scale = 10;
+    const rows = Math.floor(canvas.height / scale);
+    const columns = Math.floor(canvas.width / scale);
 
     const newSnake = [...snake];
     const head = [...newSnake[0]];
+
     switch (direction) {
       case "UP":
         head[1] -= 1;
@@ -50,34 +61,42 @@ const SnakeGame = () => {
 
     newSnake.unshift(head);
 
+    // Check if the snake has hit the boundaries of the canvas
+    if (head[0] < 0 || head[0] >= columns || head[1] < 0 || head[1] >= rows) {
+      setGameOver(true);
+      gameOverSound.current?.play();
+      runningSound.current?.pause();
+      runningSound.current!.currentTime = 0;
+      if (intervalRef.current !== null) {
+        clearInterval(intervalRef.current);
+      }
+      return;
+    }
+
+    // Check if the snake has collided with itself
+    for (let i = 1; i < newSnake.length; i++) {
+      if (newSnake[i][0] === head[0] && newSnake[i][1] === head[1]) {
+        setGameOver(true);
+        gameOverSound.current?.play();
+        runningSound.current?.pause();
+        runningSound.current!.currentTime = 0;
+        if (intervalRef.current !== null) {
+          clearInterval(intervalRef.current);
+        }
+        return;
+      }
+    }
+
+    // Check if the snake has eaten the fruit
     if (head[0] === fruit[0] && head[1] === fruit[1]) {
       setScore((prevScore) => prevScore + 1);
       setFruit([
         Math.floor(Math.random() * columns),
         Math.floor(Math.random() * rows),
       ]);
-      eatingSound.current.play();
+      eatingSound.current?.play();
     } else {
       newSnake.pop();
-    }
-
-    if (
-      head[0] < 0 ||
-      head[0] >= columns ||
-      head[1] < 0 ||
-      head[1] >= rows ||
-      newSnake
-        .slice(1)
-        .some((segment) => segment[0] === head[0] && segment[1] === head[1])
-    ) {
-      setGameOver(true);
-      gameOverSound.current.play();
-      runningSound.current.pause();
-      runningSound.current.currentTime = 0;
-      if (intervalRef.current !== null) {
-        clearInterval(intervalRef.current);
-      }
-      return;
     }
 
     setSnake(newSnake);
@@ -135,16 +154,20 @@ const SnakeGame = () => {
 
     window.addEventListener("keydown", handleKeyDown);
     intervalRef.current = window.setInterval(gameLoop, gameSpeed);
-    runningSound.current.loop = true;
-    runningSound.current.play();
+    if (runningSound.current) {
+      runningSound.current.loop = true;
+      runningSound.current.play();
+    }
 
     return () => {
       if (intervalRef.current !== null) {
         clearInterval(intervalRef.current);
       }
       window.removeEventListener("keydown", handleKeyDown);
-      runningSound.current.pause();
-      runningSound.current.currentTime = 0; // Reset sound position
+      if (runningSound.current) {
+        runningSound.current.pause();
+        runningSound.current.currentTime = 0; // Reset sound position
+      }
     };
   }, [gameOver, gameSpeed, update, draw]);
 
@@ -158,7 +181,9 @@ const SnakeGame = () => {
     ]);
     setFruit([15, 15]);
     setDirection("UP");
-    runningSound.current.play();
+    if (runningSound.current) {
+      runningSound.current.play();
+    }
     if (intervalRef.current !== null) {
       clearInterval(intervalRef.current);
     }
@@ -180,8 +205,8 @@ const SnakeGame = () => {
   };
 
   return (
-    <div className="w-1/2 flex flex-col gap-5 py-4 items-center justify-center mx-auto  bg-[#333232] rounded-md">
-      <div className="w-full h-[50px] flex items-center  bg-orange-300 px-4">
+    <div className="w-1/2 flex flex-col gap-5 py-4 items-center justify-center mx-auto bg-[#333232] rounded-md">
+      <div className="w-full h-[50px] flex items-center bg-orange-300 px-4">
         <div className="flex-1 flex items-center gap-1">
           <button
             className="h-8 w-[20%] text-sm rounded-full bg-green-500 text-white"
@@ -223,7 +248,7 @@ const SnakeGame = () => {
             <div className="text-2xl text-white">Score: {score}</div>
             <p className="text-xl text-red-500">Game Over!</p>
             <button
-              className="w-full py-1 bg-blue-500 text-white rounded"
+              className="w-full py-2 bg-blue-500 text-white rounded"
               onClick={handleRestart}
             >
               Restart
