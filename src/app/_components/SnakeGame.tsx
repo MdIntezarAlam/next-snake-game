@@ -18,6 +18,11 @@ const SnakeGame = () => {
     "UP"
   );
   const intervalRef = useRef<number | null>(null);
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [endTime, setEndTime] = useState<number | null>(null);
+  const [totalTime, setTotalTime] = useState<number>(0);
+  const [highScore, setHighScore] = useState<number>(0);
+  const [bestTime, setBestTime] = useState<number>(0);
 
   const eatingSound = useRef<HTMLAudioElement | null>(null);
   const runningSound = useRef<HTMLAudioElement | null>(null);
@@ -30,6 +35,9 @@ const SnakeGame = () => {
       eatingSound.current = new Audio("/eatingSound.mp3");
       runningSound.current = new Audio("/runningSound.mp3");
       gameOverSound.current = new Audio("/gameOverSound.mp3");
+
+      setHighScore(Number(localStorage.getItem("highScore")) || 0);
+      setBestTime(Number(localStorage.getItem("bestTime")) || 0);
     }
   }, []);
 
@@ -63,6 +71,8 @@ const SnakeGame = () => {
 
     if (head[0] < 0 || head[0] >= columns || head[1] < 0 || head[1] >= rows) {
       setGameOver(true);
+      setEndTime(Date.now());
+      setTotalTime(Date.now() - (startTime ?? Date.now()));
       gameOverSound.current?.play();
       runningSound.current?.pause();
       runningSound.current!.currentTime = 0;
@@ -75,6 +85,8 @@ const SnakeGame = () => {
     for (let i = 1; i < newSnake.length; i++) {
       if (newSnake[i][0] === head[0] && newSnake[i][1] === head[1]) {
         setGameOver(true);
+        setEndTime(Date.now());
+        setTotalTime(Date.now() - (startTime ?? Date.now()));
         gameOverSound.current?.play();
         runningSound.current?.pause();
         runningSound.current!.currentTime = 0;
@@ -97,7 +109,7 @@ const SnakeGame = () => {
     }
 
     setSnake(newSnake);
-  }, [direction, fruit, snake]);
+  }, [direction, fruit, snake, startTime]);
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
@@ -114,8 +126,16 @@ const SnakeGame = () => {
           context.fillRect(x * scale, y * scale, scale, scale);
         });
 
-        context.fillStyle = "red";
-        context.fillRect(fruit[0] * scale, fruit[1] * scale, scale, scale);
+        context.fillStyle = "yellow";
+        context.beginPath();
+        context.arc(
+          fruit[0] * scale + scale / 2,
+          fruit[1] * scale + scale / 2,
+          scale / 2,
+          0,
+          2 * Math.PI
+        );
+        context.fill();
       };
       bg.src = bgImage.src;
     }
@@ -123,7 +143,7 @@ const SnakeGame = () => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const scale = 10; 
+    const scale = 10;
 
     const gameLoop = () => {
       if (!gameOver) {
@@ -168,6 +188,21 @@ const SnakeGame = () => {
     };
   }, [gameOver, gameSpeed, update, draw]);
 
+  useEffect(() => {
+    if (gameOver) {
+      const currentScore = score;
+      const currentTime = totalTime;
+      if (currentScore > highScore) {
+        setHighScore(currentScore);
+        localStorage.setItem("highScore", String(currentScore));
+      }
+      if (currentTime < bestTime || bestTime === 0) {
+        setBestTime(currentTime);
+        localStorage.setItem("bestTime", String(currentTime));
+      }
+    }
+  }, [gameOver, score, totalTime, highScore, bestTime]);
+
   const handleRestart = () => {
     setScore(0);
     setGameOver(false);
@@ -178,6 +213,7 @@ const SnakeGame = () => {
     ]);
     setFruit([15, 15]);
     setDirection("UP");
+    setStartTime(Date.now());
     if (runningSound.current) {
       runningSound.current.play();
     }
@@ -187,7 +223,7 @@ const SnakeGame = () => {
     intervalRef.current = window.setInterval(() => {
       update();
       draw();
-    }, gameSpeed); 
+    }, gameSpeed);
   };
 
   const handleSpeedChange = (speed: number) => {
@@ -201,51 +237,58 @@ const SnakeGame = () => {
     }, speed);
   };
 
+  const formatTime = (milliseconds: number) => {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
+  };
+
   return (
-    <div className="w-1/2 flex flex-col gap-5 py-4 items-center justify-center mx-auto bg-[#333232] rounded-md">
+    <div className="w-1/2 min-h-screen flex flex-col gap-5 py-4 items-center justify-center mx-auto bg-[#333232] rounded-md">
       <div className="w-full h-[50px] flex items-center bg-orange-300 px-4">
         <div className="flex-1 flex items-center gap-1">
           <button
             className="h-8 w-[20%] text-sm rounded-full bg-green-500 text-white"
+            type="button"
             onClick={() => handleSpeedChange(300)}
           >
             Slow
           </button>
           <button
             className="h-8 w-[20%] text-sm rounded-full bg-yellow-500 text-white"
+            type="button"
             onClick={() => handleSpeedChange(200)}
           >
             Normal
           </button>
           <button
-            className="h-8 w-[20%] text-sm rounded-full bg-[#774343] text-white"
+            className="h-8 w-[20%] text-sm rounded-full bg-red-500 text-white"
+            type="button"
             onClick={() => handleSpeedChange(100)}
           >
             Fast
           </button>
-          <div className="text-2xl">Score: {score}</div>
-        </div>
-        <div className="flex items-center justify-end h-[45px] w-[45px]">
-          <img
-            src="/user.jpg"
-            alt="user"
-            className="h-full w-full rounded-full object-cover"
-          />
         </div>
       </div>
-      <div className="w-full flex items-center justify-center gap-5 bg-[#3d3536] px-4">
+      <div className="w-full h-[50px] flex items-center bg-blue-300 px-4 justify-between">
+        <span className="text-black">Score: {score}</span>
+        <span className="text-black">High Score: {highScore}</span>
+        <span className="text-black">Time: {formatTime(totalTime)}</span>
+      </div>
+      <div className="relative">
         <canvas
           ref={canvasRef}
-          width="400"
-          height="400"
-          className="border-2 border-black"
+          width={400}
+          height={400}
+          className="bg-black rounded-md relative"
         />
+
         {gameOver && (
-          <div className="w-full flex flex-col items-center gap-4">
-            <div className="text-2xl text-white">Score: {score}</div>
-            <p className="text-xl text-red-500">Game Over!</p>
+          <div className="absolute  top-10 w-full h-full flex flex-col items-center justify-center gap-4">
+            <span className="text-white font-bold text-2xl">Game Over!</span>
             <button
-              className="w-full py-2 bg-blue-500 text-white rounded"
+              className="h-8 w-[90%] text-sm rounded-full bg-red-900 text-white"
               onClick={handleRestart}
             >
               Restart
