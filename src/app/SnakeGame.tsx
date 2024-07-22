@@ -264,33 +264,8 @@ const SnakeGame = () => {
   };
 
   return (
-    <div className="w-full sm:w-1/2 h-sc  flex flex-col gap-5 lg:py-4 items-center justify-center mx-auto bg-[#333232] rounded-md">
-      <div className="w-full h-[50px] flex items-center bg-orange-300 px-4">
-        <div className="flex-1 flex items-center gap-1">
-          <button
-            className="h-8 w-[20%] text-sm rounded-full bg-green-500 text-white"
-            type="button"
-            onClick={() => handleSpeedChange(300)}
-          >
-            Slow
-          </button>
-          <button
-            className="h-8 w-[20%] text-sm rounded-full bg-yellow-500 text-white"
-            type="button"
-            onClick={() => handleSpeedChange(200)}
-          >
-            Normal
-          </button>
-          <button
-            className="h-8 w-[20%] text-sm rounded-full bg-red-500 text-white"
-            type="button"
-            onClick={() => handleSpeedChange(100)}
-          >
-            Fast
-          </button>
-        </div>
-      </div>
-      <div className="w-full h-[50px] flex items-center bg-blue-300 px-4 justify-between">
+    <div className="w-full sm:w-1/2   flex flex-col gap-2 lg:py-4 items-center justify-center mx-auto bg-[#333232] rounded-md">
+      <div className="w-full h-[40px] lg:h-[50px] flex items-center bg-blue-300 px-4 justify-between">
         <span className="text-black">Score: {score}</span>
         <span className="text-black">High Score: {highScore}</span>
         <span className="text-black">Time: {formatTime(totalTime)}</span>
@@ -315,9 +290,30 @@ const SnakeGame = () => {
           </div>
         )}
       </div>
-
+      <div className="w-full h-[40px] lg:h-[50px] flex items-center justify-between gap-5 bg-orange-300 px-4">
+        <button
+          className="h-[70%] w-full text-sm rounded-full bg-green-500 text-white"
+          type="button"
+          onClick={() => handleSpeedChange(300)}
+        >
+          Slow
+        </button>
+        <button
+          className="h-[70%] w-full text-sm rounded-full bg-yellow-500 text-white"
+          type="button"
+          onClick={() => handleSpeedChange(200)}
+        >
+          Normal
+        </button>
+        <button
+          className="h-[70%] w-full text-sm rounded-full bg-red-500 text-white"
+          type="button"
+          onClick={() => handleSpeedChange(100)}
+        >
+          Fast
+        </button>
+      </div>
       <div className="flex flex-col gap-2 sm:hidden w-[70%] rounded-md p-2">
-        {" "}
         <button
           className="min-h-20 min-w-20 bg-gray-800 text-white flex items-center justify-center text-4xl rounded-full mx-auto"
           onClick={() => handleDirectionChange("UP")}
