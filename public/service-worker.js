@@ -3,7 +3,6 @@ const URLS_TO_CACHE = [
   "/",
   "/favicon.ico",
   "/manifest.json",
-  // Add other URLs or assets you want to cache
 ];
 
 self.addEventListener("install", (event) => {

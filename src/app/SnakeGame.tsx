@@ -3,6 +3,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useRef, useCallback } from "react";
 import bgImage from "@/public/bg-image.jpg";
+import {
+  FaChevronDown,
+  FaChevronLeft,
+  FaChevronRight,
+  FaChevronUp,
+} from "react-icons/fa";
 
 const SnakeGame = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -237,6 +243,19 @@ const SnakeGame = () => {
     }, speed);
   };
 
+  const handleDirectionChange = (
+    newDirection: "UP" | "DOWN" | "LEFT" | "RIGHT"
+  ) => {
+    if (
+      (newDirection === "UP" && direction !== "DOWN") ||
+      (newDirection === "DOWN" && direction !== "UP") ||
+      (newDirection === "LEFT" && direction !== "RIGHT") ||
+      (newDirection === "RIGHT" && direction !== "LEFT")
+    ) {
+      setDirection(newDirection);
+    }
+  };
+
   const formatTime = (milliseconds: number) => {
     const totalSeconds = Math.floor(milliseconds / 1000);
     const minutes = Math.floor(totalSeconds / 60);
@@ -245,7 +264,7 @@ const SnakeGame = () => {
   };
 
   return (
-    <div className="w-1/2 min-h-screen flex flex-col gap-5 py-4 items-center justify-center mx-auto bg-[#333232] rounded-md">
+    <div className="w-full sm:w-1/2 h-sc  flex flex-col gap-5 lg:py-4 items-center justify-center mx-auto bg-[#333232] rounded-md">
       <div className="w-full h-[50px] flex items-center bg-orange-300 px-4">
         <div className="flex-1 flex items-center gap-1">
           <button
@@ -285,7 +304,7 @@ const SnakeGame = () => {
         />
 
         {gameOver && (
-          <div className="absolute  top-10 w-full h-full flex flex-col items-center justify-center gap-4">
+          <div className="absolute top-10 w-full h-full flex flex-col items-center justify-center gap-4">
             <span className="text-white font-bold text-2xl">Game Over!</span>
             <button
               className="h-8 w-[90%] text-sm rounded-full bg-red-900 text-white"
@@ -295,6 +314,36 @@ const SnakeGame = () => {
             </button>
           </div>
         )}
+      </div>
+
+      <div className="flex flex-col gap-2 sm:hidden w-[70%] rounded-md p-2">
+        {" "}
+        <button
+          className="min-h-20 min-w-20 bg-gray-800 text-white flex items-center justify-center text-4xl rounded-full mx-auto"
+          onClick={() => handleDirectionChange("UP")}
+        >
+          <FaChevronUp className="p-1" />
+        </button>
+        <div className="flex justify-between">
+          <button
+            className="min-h-20 min-w-20 bg-gray-800 text-white flex items-center justify-center text-4xl rounded-full"
+            onClick={() => handleDirectionChange("LEFT")}
+          >
+            <FaChevronLeft className="p-1" />
+          </button>
+          <button
+            className="min-h-20 min-w-20 bg-gray-800 text-white flex items-center justify-center text-4xl rounded-full"
+            onClick={() => handleDirectionChange("RIGHT")}
+          >
+            <FaChevronRight className="p-1" />
+          </button>
+        </div>
+        <button
+          className="min-h-20 min-w-20 bg-gray-800 text-white flex items-center justify-center text-4xl rounded-full mx-auto"
+          onClick={() => handleDirectionChange("DOWN")}
+        >
+          <FaChevronDown className="p-1" />
+        </button>
       </div>
     </div>
   );

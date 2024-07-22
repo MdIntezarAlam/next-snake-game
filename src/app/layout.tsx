@@ -18,7 +18,7 @@ export default function RootLayout({
       </head>
       <body>
         {children}
-        <ClientOnlyComponent /> {/* Render the client-side component */}
+        <ClientOnlyComponent />
       </body>
     </html>
   );
