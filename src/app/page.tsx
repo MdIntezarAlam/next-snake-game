@@ -10,8 +10,10 @@ import {
   FaChevronRight,
   FaChevronUp,
 } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 const SnakeGame = () => {
+  const router = useRouter();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
@@ -340,7 +342,10 @@ const SnakeGame = () => {
         >
           Fast
         </button>
-        <div className="w-[40px] h-[40px]">
+        <div
+          className="w-[40px] h-[40px] cursor-pointer"
+          onClick={() => router.push("https://intezar-dev.netlify.app/")}
+        >
           <img
             src="user.jpg"
             className="h-full w-full rounded-full object-cover"
