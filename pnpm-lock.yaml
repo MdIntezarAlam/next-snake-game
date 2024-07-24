@@ -26,6 +26,9 @@ dependencies:
   next:
     specifier: 14.2.3
     version: 14.2.3(@babel/core@7.24.9)(react-dom@18.2.0)(react@18.2.0)
+  next-snake-game:
+    specifier: 'link:'
+    version: 'link:'
   react:
     specifier: ^18
     version: 18.2.0
