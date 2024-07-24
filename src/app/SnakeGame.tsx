@@ -127,9 +127,24 @@ const SnakeGame = () => {
       bg.onload = () => {
         context.clearRect(0, 0, canvas!.width, canvas!.height);
         context.drawImage(bg, 0, 0, canvas!.width, canvas!.height);
-        context.fillStyle = "green";
-        snake.forEach(([x, y]) => {
-          context.fillRect(x * scale, y * scale, scale, scale);
+
+        context.fillStyle = "white";
+        snake.forEach(([x, y], index) => {
+          if (index === 0) {
+            // Draw the head as a circle
+            context.beginPath();
+            context.arc(
+              x * scale + scale / 2,
+              y * scale + scale / 2,
+              scale / 2,
+              0,
+              2 * Math.PI
+            );
+            context.fill();
+          } else {
+            // Draw the body as rectangles
+            context.fillRect(x * scale, y * scale, scale, scale);
+          }
         });
 
         context.fillStyle = "yellow";
@@ -292,50 +307,57 @@ const SnakeGame = () => {
       </div>
       <div className="w-full h-[40px] lg:h-[50px] flex items-center justify-between gap-5 bg-orange-300 px-4">
         <button
-          className="h-[70%] w-full text-sm rounded-full bg-green-500 text-white"
+          className="h-[70%] w-1/4 text-sm rounded-full bg-green-500 text-white"
           type="button"
           onClick={() => handleSpeedChange(300)}
         >
           Slow
         </button>
         <button
-          className="h-[70%] w-full text-sm rounded-full bg-yellow-500 text-white"
+          className="h-[70%] w-1/4 text-sm rounded-full bg-yellow-500 text-white"
           type="button"
           onClick={() => handleSpeedChange(200)}
         >
           Normal
         </button>
         <button
-          className="h-[70%] w-full text-sm rounded-full bg-red-500 text-white"
+          className="h-[70%] w-1/4 text-sm rounded-full bg-red-500 text-white"
           type="button"
           onClick={() => handleSpeedChange(100)}
         >
           Fast
         </button>
+        <div className="w-[40px] h-[40px]">
+          <img
+            src="/user.jpg"
+            alt="user"
+            className="w-full h-full object-cover  rounded-full"
+          />
+        </div>
       </div>
-      <div className="flex flex-col gap-2 sm:hidden w-[70%] rounded-md p-2">
+      <div className="flex flex-col sm:hidden w-[70%] rounded-md p-5">
         <button
-          className="min-h-20 min-w-20 bg-gray-800 text-white flex items-center justify-center text-4xl rounded-full mx-auto"
+          className="min-h-20 min-w-20 bg-black text-white flex items-center justify-center text-4xl rounded-full mx-auto"
           onClick={() => handleDirectionChange("UP")}
         >
           <FaChevronUp className="p-1" />
         </button>
         <div className="flex justify-between">
           <button
-            className="min-h-20 min-w-20 bg-gray-800 text-white flex items-center justify-center text-4xl rounded-full"
+            className="min-h-20 min-w-20 bg-black text-white flex items-center justify-center text-4xl rounded-full"
             onClick={() => handleDirectionChange("LEFT")}
           >
             <FaChevronLeft className="p-1" />
           </button>
           <button
-            className="min-h-20 min-w-20 bg-gray-800 text-white flex items-center justify-center text-4xl rounded-full"
+            className="min-h-20 min-w-20 bg-black text-white flex items-center justify-center text-4xl rounded-full"
             onClick={() => handleDirectionChange("RIGHT")}
           >
             <FaChevronRight className="p-1" />
           </button>
         </div>
         <button
-          className="min-h-20 min-w-20 bg-gray-800 text-white flex items-center justify-center text-4xl rounded-full mx-auto"
+          className="min-h-20 min-w-20 bg-black text-white flex items-center justify-center text-4xl rounded-full mx-auto"
           onClick={() => handleDirectionChange("DOWN")}
         >
           <FaChevronDown className="p-1" />
