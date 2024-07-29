@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 "use client";
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
@@ -9,8 +10,14 @@ import {
   FaChevronRight,
   FaChevronUp,
 } from "react-icons/fa";
+import { useRouter } from "next/navigation";
+import GameHeader from "./GameHeader";
+import GameGround from "./GameGround";
+import SpeedController from "./SpeedController";
+import GameDirection from "./GameDirection";
 
-const SnakeGame = () => {
+const GameContainer = () => {
+  const router = useRouter();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
@@ -24,6 +31,7 @@ const SnakeGame = () => {
     "UP"
   );
   const intervalRef = useRef<number | null>(null);
+  const [isPaused, setIsPaused] = useState(false);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [endTime, setEndTime] = useState<number | null>(null);
   const [totalTime, setTotalTime] = useState<number>(0);
@@ -48,6 +56,8 @@ const SnakeGame = () => {
   }, []);
 
   const update = useCallback(() => {
+    if (isPaused) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -115,7 +125,7 @@ const SnakeGame = () => {
     }
 
     setSnake(newSnake);
-  }, [direction, fruit, snake, startTime]);
+  }, [direction, fruit, snake, startTime, isPaused]);
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
@@ -163,11 +173,8 @@ const SnakeGame = () => {
   }, [snake, fruit]);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    const scale = 10;
-
     const gameLoop = () => {
-      if (!gameOver) {
+      if (!gameOver && !isPaused) {
         update();
         draw();
       }
@@ -191,7 +198,11 @@ const SnakeGame = () => {
     };
 
     window.addEventListener("keydown", handleKeyDown);
+    if (intervalRef.current !== null) {
+      clearInterval(intervalRef.current);
+    }
     intervalRef.current = window.setInterval(gameLoop, gameSpeed);
+
     if (runningSound.current) {
       runningSound.current.loop = true;
       runningSound.current.play();
@@ -207,7 +218,7 @@ const SnakeGame = () => {
         runningSound.current.currentTime = 0;
       }
     };
-  }, [gameOver, gameSpeed, update, draw]);
+  }, [gameOver, gameSpeed, update, draw, isPaused]);
 
   useEffect(() => {
     if (gameOver) {
@@ -271,6 +282,15 @@ const SnakeGame = () => {
     }
   };
 
+  const togglePause = () => {
+    setIsPaused((prevIsPaused) => !prevIsPaused);
+    if (isPaused) {
+      runningSound.current?.play();
+    } else {
+      runningSound.current?.pause();
+    }
+  };
+
   const formatTime = (milliseconds: number) => {
     const totalSeconds = Math.floor(milliseconds / 1000);
     const minutes = Math.floor(totalSeconds / 60);
@@ -279,92 +299,26 @@ const SnakeGame = () => {
   };
 
   return (
-    <div className="w-full sm:w-1/2   flex flex-col gap-2 lg:py-4 items-center justify-center mx-auto bg-[#333232] rounded-md">
-      <div className="w-full h-[40px] lg:h-[50px] flex items-center bg-blue-300 px-4 justify-between">
-        <span className="text-black">Score: {score}</span>
-        <span className="text-black">High Score: {highScore}</span>
-        <span className="text-black">Time: {formatTime(totalTime)}</span>
-      </div>
-      <div className="relative">
-        <canvas
-          ref={canvasRef}
-          width={400}
-          height={400}
-          className="bg-black rounded-md relative"
-        />
-
-        {gameOver && (
-          <div className="absolute top-10 w-full h-full flex flex-col items-center justify-center gap-4">
-            <span className="text-white font-bold text-2xl">Game Over!</span>
-            <button
-              className="h-8 w-[90%] text-sm rounded-full bg-red-900 text-white"
-              onClick={handleRestart}
-            >
-              Restart
-            </button>
-          </div>
-        )}
-      </div>
-      <div className="w-full h-[40px] lg:h-[50px] flex items-center justify-between gap-5 bg-orange-300 px-4">
-        <button
-          className="h-[70%] w-1/4 text-sm rounded-full bg-green-500 text-white"
-          type="button"
-          onClick={() => handleSpeedChange(300)}
-        >
-          Slow
-        </button>
-        <button
-          className="h-[70%] w-1/4 text-sm rounded-full bg-yellow-500 text-white"
-          type="button"
-          onClick={() => handleSpeedChange(200)}
-        >
-          Normal
-        </button>
-        <button
-          className="h-[70%] w-1/4 text-sm rounded-full bg-red-500 text-white"
-          type="button"
-          onClick={() => handleSpeedChange(100)}
-        >
-          Fast
-        </button>
-        <div className="w-[40px] h-[40px]">
-          <img
-            src="/user.jpg"
-            alt="user"
-            className="w-full h-full object-cover  rounded-full"
-          />
-        </div>
-      </div>
-      <div className="flex flex-col sm:hidden w-[70%] rounded-md p-5">
-        <button
-          className="min-h-20 min-w-20 bg-black text-white flex items-center justify-center text-4xl rounded-full mx-auto"
-          onClick={() => handleDirectionChange("UP")}
-        >
-          <FaChevronUp className="p-1" />
-        </button>
-        <div className="flex justify-between">
-          <button
-            className="min-h-20 min-w-20 bg-black text-white flex items-center justify-center text-4xl rounded-full"
-            onClick={() => handleDirectionChange("LEFT")}
-          >
-            <FaChevronLeft className="p-1" />
-          </button>
-          <button
-            className="min-h-20 min-w-20 bg-black text-white flex items-center justify-center text-4xl rounded-full"
-            onClick={() => handleDirectionChange("RIGHT")}
-          >
-            <FaChevronRight className="p-1" />
-          </button>
-        </div>
-        <button
-          className="min-h-20 min-w-20 bg-black text-white flex items-center justify-center text-4xl rounded-full mx-auto"
-          onClick={() => handleDirectionChange("DOWN")}
-        >
-          <FaChevronDown className="p-1" />
-        </button>
-      </div>
+    <div className="w-full h-full lg:h-fit lg:w-1/2 flex flex-col gap-2 m-auto bg-[#333232] rounded-md ">
+      <GameHeader
+        score={score}
+        formatTime={formatTime}
+        highScore={highScore}
+        totalTime={totalTime}
+      />
+      <GameGround
+        canvasRef={canvasRef}
+        gameOver={gameOver}
+        handleRestart={handleRestart}
+      />
+      <SpeedController
+        handleSpeedChange={handleSpeedChange}
+        isPaused={isPaused}
+        togglePause={togglePause}
+      />
+      <GameDirection handleDirectionChange={handleDirectionChange} />
     </div>
   );
 };
 
-export default SnakeGame;
+export default GameContainer;
