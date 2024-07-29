@@ -293,7 +293,7 @@ const GameContainer = () => {
   };
 
   return (
-    <div className="w-full h-full lg:h-fit lg:w-1/2 flex flex-col gap-2 m-auto bg-[#333232] rounded-md ">
+    <div className="w-full h-full lg:h-fit lg:w-1/2 flex flex-col gap-2 m-auto bg-[#333232] rounded-md bg-gradient-to-r from-teal-400 to-gray-800 ">
       <GameHeader
         score={score}
         formatTime={formatTime}

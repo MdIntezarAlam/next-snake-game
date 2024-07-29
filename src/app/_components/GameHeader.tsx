@@ -24,9 +24,9 @@ export default function GameHeader({
     { title: "Time", score: formatTime(totalTime) },
   ];
   return (
-    <nav className="w-full h-[40px] bg-blue-300 px-4 flex items-center justify-between">
+    <nav className="w-full h-[40px] bg-gradient-to-r from-blue-800 to-indigo-900 px-4 flex items-center justify-between rounded-br-full rounded-tl-full">
       {scoreMap.map((item, index) => (
-        <span key={index} className="text-black font-medium lg:text-xl">
+        <span key={index} className="text-white font-medium lg:text-xl">
           {item.title}: {item.score}
         </span>
       ))}

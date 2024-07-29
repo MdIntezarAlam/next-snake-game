@@ -24,7 +24,7 @@ const SpeedController: React.FC<Props> = ({
 
   return (
     <>
-      <div className="grid grid-cols-4 bg-red-200 w-full h-[40px] gap-2 py-1">
+      <div className="grid grid-cols-4 bg-gradient-to-r from-yellow-200 to-pink-400 w-full h-[40px] gap-2 py-1 ">
         {buttons.map((button, index) => (
           <button
             key={index}
