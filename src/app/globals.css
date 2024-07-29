@@ -73,3 +73,10 @@
     @apply bg-background text-foreground;
   }
 }
+
+@media screen and (max-width: 768px) {
+  .responsive {
+    width: 99%;
+    height: 100%;
+  }
+}

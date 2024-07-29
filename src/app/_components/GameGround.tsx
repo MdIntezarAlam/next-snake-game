@@ -12,7 +12,7 @@ export default function GameGround({
 }: Props) {
   return (
     <div className="relative  mx-auto">
-      <canvas ref={canvasRef} width={400} height={400}/>
+      <canvas ref={canvasRef} width={400} height={400} className="responsive"/>
       {gameOver && (
         <div className="absolute top-10 w-full h-full flex flex-col items-center justify-center gap-4">
           <span className="text-white font-bold text-2xl">Game Over!</span>
