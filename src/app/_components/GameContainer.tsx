@@ -1,15 +1,9 @@
-/* eslint-disable jsx-a11y/alt-text */
 "use client";
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useRef, useCallback } from "react";
 import bgImage from "@/public/bg-image.jpg";
-import {
-  FaChevronDown,
-  FaChevronLeft,
-  FaChevronRight,
-  FaChevronUp,
-} from "react-icons/fa";
+
 import { useRouter } from "next/navigation";
 import GameHeader from "./GameHeader";
 import GameGround from "./GameGround";
