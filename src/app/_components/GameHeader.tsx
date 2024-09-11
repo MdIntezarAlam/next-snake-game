@@ -9,25 +9,34 @@ interface Props {
   highScore: number;
   totalTime: number;
   formatTime: (time: number) => string;
+  buttons: {
+    label: string;
+    color: string;
+    speed?: number;
+    onClick?: () => void;
+  }[];
 }
 export default function GameHeader({
   score,
   formatTime,
   highScore,
   totalTime,
+  buttons,
 }: Props) {
   const router = useRouter();
 
   const scoreMap = [
-    { title: "Score", score: score },
     { title: "High Score", score: highScore },
+    { title: "Score", score: score },
     { title: "Time", score: formatTime(totalTime) },
+    { title: "Speed", score: buttons[0].label },
   ];
+
   return (
     <nav className="w-full h-[40px] bg-black text-white px-5 py-1 flex items-center justify-between lg:rounded-br-full lg:rounded-tl-full">
       {scoreMap.map((item, index) => (
         <span key={index} className="text-white font-medium lg:text-xl">
-          {item.title}: {item.score}
+          {item.title} : {item.score}
         </span>
       ))}
 

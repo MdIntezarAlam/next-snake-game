@@ -292,13 +292,24 @@ const GameContainer = () => {
     return minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
   };
 
+  const buttons = [
+    { speed: 300, label: "Slow", color: "bg-green-500" },
+    { speed: 200, label: "Normal", color: "bg-yellow-500" },
+    { speed: 100, label: "Fast", color: "bg-red-500" },
+    {
+      label: isPaused ? "Resume" : "Pause",
+      color: "bg-purple-500",
+      onClick: togglePause,
+    },
+  ];
   return (
-    <div className="w-full h-full lg:h-fit lg:w-1/2 flex flex-col gap-2 m-auto bg-[#333232] rounded-md bg-gradient-to-r from-teal-400 to-gray-800 ">
+    <div className="w-full h-full lg:h-fit lg:w-1/2 flex flex-col gap-2 m-auto bg-[#333232] rounded-md bg-gradient-to-r from-teal-400 lg:rounded-tl-[10%]    to-gray-800 ">
       <GameHeader
         score={score}
         formatTime={formatTime}
         highScore={highScore}
         totalTime={totalTime}
+        buttons={buttons}
       />
       <GameGround
         canvasRef={canvasRef}
@@ -307,8 +318,7 @@ const GameContainer = () => {
       />
       <SpeedController
         handleSpeedChange={handleSpeedChange}
-        isPaused={isPaused}
-        togglePause={togglePause}
+        buttons={buttons}
       />
       <GameDirection handleDirectionChange={handleDirectionChange} />
     </div>

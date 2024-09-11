@@ -3,9 +3,10 @@ import GameContainer from "./_components/GameContainer";
 
 export default function page() {
   return (
-    <div className="w-full h-screen  lg:flex flex-col lg:items-center lg:justify-center bg-gradient-to-r from-slate-900 to-slate-700">
-     <h1 className="hidden lg:block text-white font-bold text-2xl pt-5">NEXT SNAKE GAME</h1>
-
+    <div className="w-full h-screen  lg:flex flex-col lg:items-center lg:justify-center bg-gradient-to-r from-slate-900 to-slate-700  lg:rounded-tl-[40%] lg:rounded-br-[40%]">
+      <h1 className="hidden lg:block text-white font-bold text-2xl pt-5">
+        NEXT SNAKE GAME
+      </h1>
       <GameContainer />
     </div>
   );
